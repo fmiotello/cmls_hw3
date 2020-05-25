@@ -1,6 +1,6 @@
 //Additive synthesis implemented by summing multiple sinusoids.
 //The sound changes according to the parameters
-//MIDI Connection established
+//MIDI and OSC Connection established
 //The local GUI is for now here only to understand the system behaviour better.
 
 //TO DO:
@@ -61,24 +61,24 @@ s.waitForBoot({
 
 	NetAddr("127.0.0.1",57120);
 
-	{
 	OSCdef('OSCreceiver',{
 		arg msg;
-		x = msg[1];
-		y = msg[2];
-		z = msg[3];
-
-		[x, y, z].postln;
-		//postln(partialAmpl);
-		//each knob corresponds to one harmonic
-		//partialAmpl.do({arg value, count;
-			//partialAmpl[count] = msg[count+1]*0.1;
-		//});
+		
+		//Check if the parameters of the message are aligned with the parameters to be controlled
+		if(numharm > msg.size){
+			//each knob corresponds to amplitude of one harmonic
+			(msg.size-1).do({
+				arg i;
+				partialAmpl[i] = msg[i + 1] * 0.1;
+			});
+			postln("partialAmpl: "+partialAmpl);
+		} {postln("Error")};
+		
 
 		//setting attack and release parameters
 	},
 	"/pos");
-	};
+
 
 	//****************** MIDI **************************
 
