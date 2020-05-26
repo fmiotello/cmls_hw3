@@ -2,6 +2,7 @@
 //The sound changes according to the parameters
 //MIDI and OSC Connection established
 //The local GUI is for now here only to understand the system behaviour better.
+//Run the program by selecting all at once
 
 //TO DO:
 //Connect with Processing by OSC messages.
@@ -39,7 +40,7 @@ s.waitForBoot({
 	partialAmpl = Array.newClear(numharm);
 	partialAmpl.do({
 		arg item, count;
-		partialAmpl[count] = 0.05;
+		partialAmpl[count] = 0.5;
 	});
 	postln("Amplitudes of partials: ");
 	postln(partialAmpl); postln("**********************************************");
@@ -51,10 +52,10 @@ s.waitForBoot({
 	//to do: add general volume as a parameter (velocity of a key)
 
 	SynthDef("add-synth", {
-		arg out = 0, pan = 0, fundamental = 120, partial = 1, amp = 0.1, att = 0.01, rel = 2;
-		var snd = SinOsc.ar(fundamental * partial, 0, Lag.kr(amp, 3));
+		arg out = 0, pan = 0, fundamental = 120, partial = 1, amp = 0.5, att = 0.01, rel = 2, vel = 1;
+		var sig = SinOsc.ar(fundamental * partial, 0, Lag.kr(vel*amp/numharm, 3));
 		var env = EnvGen.kr(Env.perc(att, rel), doneAction: 2);
-		Out.ar(out, Pan2.ar(snd*env*0.5, pan));
+		Out.ar(out, Pan2.ar(sig*env*0.8, pan));
 	}).add;
 
 	//****************** OSC PART **************************
@@ -64,15 +65,20 @@ s.waitForBoot({
 	OSCdef('OSCreceiver',{
 		arg msg;
 		
+		var numOfPar = numharm; //e.g. numOfPar = numharm + 5 if we have 5 other parameters to control
+		
 		//Check if the parameters of the message are aligned with the parameters to be controlled
-		if(numharm > msg.size){
+		if(numOfPar > msg.size){
+			//rel = msg[1];
+			//att = msg[2];
+			var diff = numOfPar - numharm;
 			//each knob corresponds to amplitude of one harmonic
-			(msg.size-1).do({
+			(msg.size - diff - 1).do({
 				arg i;
-				partialAmpl[i] = msg[i + 1] * 0.1;
+				partialAmpl[i] = msg[i + diff + 1];
 			});
 			postln("partialAmpl: "+partialAmpl);
-		} {postln("Error")};
+		} {postln("Error: There are more elements in the message than the parameters")};
 		
 
 		//setting attack and release parameters
@@ -92,7 +98,7 @@ s.waitForBoot({
 			keys.put(num, nil);
 		});
 
-		spectrum = Array.fill(numharm, {arg i; Synth("add-synth", [\fundamental, num.midicps, \partial, partialFreq[i], \amp, partialAmpl[i]], addAction: \addToTail)});
+		spectrum = Array.fill(numharm, {arg i; Synth("add-synth", [\fundamental, num.midicps, \partial, partialFreq[i], \amp, partialAmpl[i], \att, att, \rel, rel, \vel, vel/127], addAction: \addToTail)});
 
 		keys.put(num, node);
 
@@ -141,7 +147,7 @@ s.waitForBoot({
 	multiSlider.gap = 9;
 	multiSlider.action = {
 		multiSlider.value.do(
-			{arg value, count; partialAmpl[count]=value*0.1;}
+			{arg value, count; partialAmpl[count]=value;}
 		);
 	};
 
