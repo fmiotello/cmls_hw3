@@ -2,6 +2,12 @@
 /*----------------------------------------------------------------------------------------------
 RadarChart inspired from the layout available on : https://github.com/pavanred/Radar-chart-utility-
 ----------------------------------------------------------------------------------------------------*/
+import controlP5.*;
+
+ControlP5 cp5;
+Knob vintage_knob;
+Knob intensity_knob;
+Knob filter_knob;
 
 RadarChart rc;
 
@@ -16,27 +22,27 @@ int hooveredDim;
 
 void setup(){  
   
-  size(800,600);  //screen size set to 800*600  
+  size(800,700);  //screen size set to 800*600  
   
   // initialise the axis
   dimNumber = 15;
   intervalNumber = 10;
   axes = new Axis[dimNumber];
-  axes[0] = new Axis(1,"Dummy0","Quad BTU");
-  axes[1] = new Axis(2,"Dummy1","Quad BTu");
-  axes[2] = new Axis(3,"Dummy2","Quad BTU");
-  axes[3] = new Axis(4,"Dummy3","Mil metric tons");
-  axes[4] = new Axis(5,"Dummy4","millions");
-  axes[5] = new Axis(6,"Dummy5","millions");
-  axes[6] = new Axis(7,"Dummy6","millions");
-  axes[7] = new Axis(8,"Dummy7","millions");
-  axes[8] = new Axis(9,"Dummy8","millions");
-  axes[9] = new Axis(10,"Dummy9","millions");
-  axes[10] = new Axis(11,"Dummy10","millions");
-  axes[11] = new Axis(12,"Dummy11","millions");
-  axes[12] = new Axis(13,"Dummy12","millions");
-  axes[13] = new Axis(14,"Dummy13","millions");
-  axes[14] = new Axis(15,"Dummy14","millions");
+  axes[0] = new Axis(1,"Fundamental");
+  axes[1] = new Axis(2,"Harmonic 1");
+  axes[2] = new Axis(3,"Harmonic 2");
+  axes[3] = new Axis(4,"Harmonic 3");
+  axes[4] = new Axis(5,"Harmonic 4");
+  axes[5] = new Axis(6,"Harmonic 5");
+  axes[6] = new Axis(7,"Harmonic 6");
+  axes[7] = new Axis(8,"Harmonic 7");
+  axes[8] = new Axis(9,"Harmonic 8");
+  axes[9] = new Axis(10,"Harmonic 9");
+  axes[10] = new Axis(11,"Harmonic 10");
+  axes[11] = new Axis(12,"Harmonic 11");
+  axes[12] = new Axis(13,"Harmonic 12");
+  axes[13] = new Axis(14,"Harmonic 13");
+  axes[14] = new Axis(15,"Harmonic 14");
   
   // initialise each parameter with a default value
   chartPoints = new PointValue[dimNumber];
@@ -57,7 +63,38 @@ void setup(){
   chartPoints[14] = new PointValue(0.8);
   
   
-  rc = new RadarChart(percentX(25),percentY(15),percentX(50),percentY(70),percentX(5),percentY(5),intervalNumber,dimNumber,percentX(15),percentY(10), axes);
+  rc = new RadarChart(percentX(25),percentY(30),percentX(50),percentY(70),percentX(5),percentY(5),intervalNumber,dimNumber,percentX(7),percentY(5), axes);
+  
+  cp5 = new ControlP5(this);
+  vintage_knob = cp5.addKnob("vintage")
+    .setPosition(percentX(20),percentY(10))
+    .setRadius(50)
+    .setRange(0,1)
+    .setValue(1)
+    .setColorForeground(color(201,112,112))
+    .setColorBackground(color(240,201,201))
+    .setColorActive(color(237,218,218))
+    .setColorCaptionLabel(color(20,20,20));
+    
+  intensity_knob = cp5.addKnob("intensity")
+    .setPosition(percentX(45),percentY(10))
+    .setRadius(50)
+    .setRange(0,1)
+    .setValue(0.7)
+    .setColorForeground(color(201,112,112))
+    .setColorBackground(color(240,201,201))
+    .setColorActive(color(237,218,218))
+    .setColorCaptionLabel(color(20,20,20));
+  
+  filter_knob = cp5.addKnob("filter")
+    .setPosition(percentX(70),percentY(10))
+    .setRadius(50)
+    .setRange(0,1)
+    .setValue(1)
+    .setColorForeground(color(201,112,112))
+    .setColorBackground(color(240,201,201))
+    .setColorActive(color(237,218,218))
+    .setColorCaptionLabel(color(20,20,20));
 }
 
 void draw(){
@@ -74,7 +111,7 @@ void draw(){
 void mousePressed() {
   if(mouseX>rc.chartBeginingX && mouseY > rc.chartBeginingY && mouseX < rc.chartBeginingX+rc.chartWidth && mouseY < rc.chartBeginingY+rc.chartHeight ){
     manipulatedDim = rc.getAxisNum(mouseX, mouseY);
-    print(manipulatedDim);
+    print("manipulating harm : "+manipulatedDim);
     print("\n");
     chartPoints[manipulatedDim].setValue(rc.getLength(mouseX, mouseY,manipulatedDim));
 
@@ -85,9 +122,15 @@ void mousePressed() {
 
 void mouseDragged() {
   if(hooveredDim==manipulatedDim){
-    print(manipulatedDim);
-    print("\n");
+    //print(manipulatedDim);
+    //print("\n");
     chartPoints[manipulatedDim].setValue(rc.getLength(mouseX, mouseY,manipulatedDim));
+  }
+  
+  else if(abs(hooveredDim-manipulatedDim)==1){
+    if(rc.getLength(mouseX, mouseY,manipulatedDim)<0.15){
+      chartPoints[manipulatedDim].setValue(rc.getLength(mouseX, mouseY,manipulatedDim));
+    }
   }
 
 }

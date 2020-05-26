@@ -2,14 +2,14 @@
 
 void setupBackground(){
   
-  background(#FFFFFF);  //back ground color white
+  background(#DDDDDD);  //back ground color white
  
   // Header label
   PFont myFont = createFont("SansSerif", 15);
   textFont(myFont);
   fill(#000000);  
   textAlign(CENTER, CENTER);
-  text("Radar Chart HW3",percentX(50), percentY(5));   
+  text("Controls HW3",percentX(50), percentY(5));   
 }
 
 //methods to use percentage instead of absolute values
@@ -31,12 +31,10 @@ class Axis{
 
   int id;
   String Name;
-  String Unit;
   
-  Axis(int _id, String _name, String _unit){
+  Axis(int _id, String _name){
     id = _id;
     Name = _name;
-    Unit = _unit;
   }
 }
 

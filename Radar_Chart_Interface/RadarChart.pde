@@ -76,7 +76,7 @@ class RadarChart{
     axisPointsY = new float[dimensions];
     float xValue;
     float yValue;
-    float angle = 0;
+    float angle = -90;
  
     for(int i = 0; i < dimensions; i++, angle += angleStep){  //increment angle of the axis/dimension drawn i.e. increment by 360/3 deg for a chart of 3 dimentions/axis
 
@@ -119,7 +119,7 @@ class RadarChart{
   
   
   void addValuesInChart(PointValue[] pointValues){
-    float angle = 0;
+    float angle = -90;
     fill(#ffdf00, 70);
     beginShape();
     for(int i = 0; i < dimensions; i++, angle += angleStep){
@@ -139,8 +139,9 @@ class RadarChart{
     return (centerY + (len * sin(radians(ang))));
   }  
  
+  //get the number of the hoovered axis
   private int getAxisNum(float _mouseX, float _mouseY){
-    float actualAngleDegree = (angleStep/2) + 180*atan2(_mouseY-centerY,_mouseX-centerX)/PI;
+    float actualAngleDegree = (angleStep/2) + 90 + 180*atan2(_mouseY-centerY,_mouseX-centerX)/PI;
     if(actualAngleDegree<0){
       actualAngleDegree+=360.0;
     }
@@ -149,7 +150,7 @@ class RadarChart{
     return (actualDim);
   }  
   
- 
+  //get the position of the mouse along the axis
   private float getLength(float _mouseX, float _mouseY, int _dimNum){
     float angle = _dimNum*angleStep;
     float actualLength = sqrt(pow((_mouseX-centerX),2)+pow((_mouseY-centerY),2))/axisLength;
@@ -178,19 +179,23 @@ class RadarChart{
                     
      if(ang >= 0 && ang < 90){
        textAlign(LEFT, BOTTOM);
-       text(axis.Name + " (" + axis.Unit + ")",xValue + labelWidth/6,yValue + labelHeight/4);        
+       text(axis.Name, xValue + labelWidth/6,yValue + labelHeight/4);        
      }
      if(ang >= 90 && ang < 180){    
         textAlign(LEFT, BOTTOM);   
-          text(axis.Name + " (" + axis.Unit + ")",xValue - labelWidth,yValue + labelHeight/2);      
+          text(axis.Name, xValue - labelWidth,yValue + labelHeight/2);      
      }
      if(ang >= 180 && ang < 270){     
        textAlign(LEFT, BOTTOM);  
-          text(axis.Name + " (" + axis.Unit + ")",xValue - labelWidth,yValue - labelHeight/6); 
+       text(axis.Name, xValue - labelWidth,yValue - labelHeight/6); 
      }
-     if(ang >= 270 && ang < 360){ 
+     if((ang >= 270 && ang < 360)||(ang > -90 && ang < 0)){ 
        textAlign(LEFT, BOTTOM);      
-          text(axis.Name + " (" + axis.Unit + ")",xValue,yValue - labelHeight/6); 
+       text(axis.Name, xValue,yValue - labelHeight/6); 
+     }
+     if(ang==-90){
+         textAlign(CENTER, BOTTOM); 
+         text(axis.Name, xValue,yValue - labelHeight/3); 
      }
   } 
 }
