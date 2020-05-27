@@ -55,7 +55,10 @@ s.waitForBoot({
 		arg out = 0, pan = 0, fundamental = 120, partial = 1, amp = 0.5, att = 0.01, rel = 2, vel = 1;
 		var sig = SinOsc.ar(fundamental * partial, 0, Lag.kr(vel*amp/numharm, 3));
 		var env = EnvGen.kr(Env.perc(att, rel), doneAction: 2);
-		Out.ar(out, Pan2.ar(sig*env*0.8, pan));
+		sig = sig*env*0.8;
+		sig = FreeVerb.ar(sig, mix: 0.8, room: 0.8, damp: 0, mul: 1.0, add: 0) ;
+		DetectSilence.ar(sig, -96.dbamp, doneAction:2) ;
+		Out.ar(out, Pan2.ar(sig, pan));
 	}).add;
 
 	//****************** OSC PART **************************
@@ -64,9 +67,9 @@ s.waitForBoot({
 
 	OSCdef('OSCreceiver',{
 		arg msg;
-		
+
 		var numOfPar = numharm; //e.g. numOfPar = numharm + 5 if we have 5 other parameters to control
-		
+
 		//Check if the parameters of the message are aligned with the parameters to be controlled
 		if(numOfPar > msg.size){
 			//rel = msg[1];
@@ -79,7 +82,7 @@ s.waitForBoot({
 			});
 			postln("partialAmpl: "+partialAmpl);
 		} {postln("Error: There are more elements in the message than the parameters")};
-		
+
 
 		//setting attack and release parameters
 	},
@@ -99,6 +102,7 @@ s.waitForBoot({
 		});
 
 		spectrum = Array.fill(numharm, {arg i; Synth("add-synth", [\fundamental, num.midicps, \partial, partialFreq[i], \amp, partialAmpl[i], \att, att, \rel, rel, \vel, vel/127], addAction: \addToTail)});
+
 
 		keys.put(num, node);
 
@@ -174,3 +178,23 @@ s.waitForBoot({
 		postln(partialAmpl);
 	};
 });
+
+/*(
+SynthDef(\reverb , {arg in, out=10, mix = 5, room = 10, damp = 10;
+	Out.ar(out,
+		FreeVerb.ar(In.ar(in)),
+		mix,
+		room,
+		damp
+	) ! 2
+}).add ; )
+
+
+
+(
+~revBus = Bus.audio(s,1) ;
+~rev = Synth(\reverb) ;
+~rev.set(\in , ~revBus);
+Synth("add-synth" , [\out , ~revBus])
+;)*/
+

@@ -6,16 +6,15 @@ OscP5 oscP5;
 NetAddress myRemoteLocation;
 
 ControlP5 cp5;
-Knob vintage_knob;
-Knob intensity_knob;
-Knob filter_knob;
+Knob spider_knob;
+Button b;
 
-float intensity;
-float vintage;
-float filter;
+PImage spider_img;
+
+float spider;
 
 void setup() {
-  size(400, 200);
+  size(500, 500);
   background(255);
   
   smooth();
@@ -23,37 +22,14 @@ void setup() {
   
   oscP5 = new OscP5(this, 12000);
   myRemoteLocation = new NetAddress("127.0.0.1", 57120);
+
+  spider_img = loadImage("spider.jpeg");
   
   cp5 = new ControlP5(this);
-  vintage_knob = cp5.addKnob("vintage")
-    .setPosition(25,20)
-    .setRadius(50)
-    .setRange(0,1)
-    .setValue(1)
-    .setColorForeground(color(201,112,112))
-    .setColorBackground(color(240,201,201))
-    .setColorActive(color(237,218,218))
-    .setColorCaptionLabel(color(20,20,20));
-    
-  intensity_knob = cp5.addKnob("intensity")
-    .setPosition(150,20)
-    .setRadius(50)
-    .setRange(0,1)
-    .setValue(1)
-    .setColorForeground(color(201,112,112))
-    .setColorBackground(color(240,201,201))
-    .setColorActive(color(237,218,218))
-    .setColorCaptionLabel(color(20,20,20));
   
-  filter_knob = cp5.addKnob("filter")
-    .setPosition(275,20)
-    .setRadius(50)
-    .setRange(0,1)
-    .setValue(1)
-    .setColorForeground(color(201,112,112))
-    .setColorBackground(color(240,201,201))
-    .setColorActive(color(237,218,218))
-    .setColorCaptionLabel(color(20,20,20));
+ spider_knob = cp5.addKnob("spider")
+    .setImage(spider_img)
+    .setSize(50,50);
 }
 
 void draw() {
@@ -63,9 +39,7 @@ void draw() {
 void controlEvent(ControlEvent theEvent) {
   OscMessage myMessage = new OscMessage("/pos");
   
-  myMessage.add(vintage);
-  myMessage.add(intensity);
-  myMessage.add(filter);
+  myMessage.add(spider);
   
   oscP5.send(myMessage, myRemoteLocation);
   myMessage.print();
