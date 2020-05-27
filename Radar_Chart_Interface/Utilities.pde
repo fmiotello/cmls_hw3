@@ -42,16 +42,33 @@ class Axis{
 class PointValue{
 
   float value;  //between 0 and 1
+  float harmonicNumber;
   
-  PointValue(float _value){
+  PointValue(float _value, int _harmonicNumber){    // harmonicNumber 0 = fundamental
     value = _value;
+    harmonicNumber = _harmonicNumber;
     if(value>1){
-      print("WARNING : value>1\n");
+      print("ERROR VALUE : value>1\n");
     }
+    OscMessage myMessage = new OscMessage("/harmonic");
+    
+    myMessage.add(this.harmonicNumber);
+    myMessage.add(this.value);
+    
+    oscP5.send(myMessage, myRemoteLocation);
+    myMessage.print();
   }
   void setValue(float _value){
     if(_value!=-1){
-      value = _value;
+      this.value = _value;
+      
+      OscMessage myMessage = new OscMessage("/harmonic");
+      
+      myMessage.add(this.harmonicNumber);    // harmonicNumber 0 = fundamental
+      myMessage.add(this.value);
+      
+      oscP5.send(myMessage, myRemoteLocation);
+      myMessage.print();
     }
   }
 }

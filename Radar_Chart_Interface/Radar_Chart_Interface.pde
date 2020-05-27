@@ -3,11 +3,22 @@
 RadarChart inspired from the layout available on : https://github.com/pavanred/Radar-chart-utility-
 ----------------------------------------------------------------------------------------------------*/
 import controlP5.*;
+import oscP5.*;
+import netP5.*;
+
+OscP5 oscP5;
+NetAddress myRemoteLocation;
 
 ControlP5 cp5;
-Knob vintage_knob;
-Knob intensity_knob;
-Knob filter_knob;
+Knob amplitude_knob;
+Knob reverb_knob;
+Knob attack_knob;
+Knob release_knob;
+
+float amplitude;
+float reverb;
+float attack;
+float release;
 
 RadarChart rc;
 
@@ -24,50 +35,32 @@ void setup(){
   
   size(800,700);  //screen size set to 800*600  
   
-  // initialise the axis
+  //initialise the OSC communication
+  oscP5 = new OscP5(this, 12000);
+  myRemoteLocation = new NetAddress("127.0.0.1", 57120);
+  
+  // initialise the axis +  each parameter with a default value
   dimNumber = 15;
   intervalNumber = 10;
-  axes = new Axis[dimNumber];
-  axes[0] = new Axis(1,"Fundamental");
-  axes[1] = new Axis(2,"Harmonic 1");
-  axes[2] = new Axis(3,"Harmonic 2");
-  axes[3] = new Axis(4,"Harmonic 3");
-  axes[4] = new Axis(5,"Harmonic 4");
-  axes[5] = new Axis(6,"Harmonic 5");
-  axes[6] = new Axis(7,"Harmonic 6");
-  axes[7] = new Axis(8,"Harmonic 7");
-  axes[8] = new Axis(9,"Harmonic 8");
-  axes[9] = new Axis(10,"Harmonic 9");
-  axes[10] = new Axis(11,"Harmonic 10");
-  axes[11] = new Axis(12,"Harmonic 11");
-  axes[12] = new Axis(13,"Harmonic 12");
-  axes[13] = new Axis(14,"Harmonic 13");
-  axes[14] = new Axis(15,"Harmonic 14");
   
-  // initialise each parameter with a default value
+  axes = new Axis[dimNumber];
+  axes[0] = new Axis(0,"Fundamental");
+  
   chartPoints = new PointValue[dimNumber];
-  chartPoints[0] = new PointValue(0.4);
-  chartPoints[1] = new PointValue(0.5);
-  chartPoints[2] = new PointValue(0.2);
-  chartPoints[3] = new PointValue(0.2);
-  chartPoints[4] = new PointValue(0.9);
-  chartPoints[5] = new PointValue(0.5);
-  chartPoints[6] = new PointValue(0.8);
-  chartPoints[7] = new PointValue(0.2);
-  chartPoints[8] = new PointValue(0.8);
-  chartPoints[9] = new PointValue(0.8);
-  chartPoints[10] = new PointValue(0.8);
-  chartPoints[11] = new PointValue(0.8);
-  chartPoints[12] = new PointValue(0.8);
-  chartPoints[13] = new PointValue(0.8);
-  chartPoints[14] = new PointValue(0.8);
+  
+  for(int i = 0; i<dimNumber; i++){
+    chartPoints[i] = new PointValue(random(1),i);
+    if(i!=0){
+      axes[i] = new Axis(i,"Harmonic "+i);
+    }
+  }
   
   
   rc = new RadarChart(percentX(25),percentY(30),percentX(50),percentY(70),percentX(5),percentY(5),intervalNumber,dimNumber,percentX(7),percentY(5), axes);
   
   cp5 = new ControlP5(this);
-  vintage_knob = cp5.addKnob("vintage")
-    .setPosition(percentX(20),percentY(10))
+  amplitude_knob = cp5.addKnob("amplitude")
+    .setPosition(percentX(15),percentY(10))
     .setRadius(50)
     .setRange(0,1)
     .setValue(1)
@@ -76,8 +69,8 @@ void setup(){
     .setColorActive(color(237,218,218))
     .setColorCaptionLabel(color(20,20,20));
     
-  intensity_knob = cp5.addKnob("intensity")
-    .setPosition(percentX(45),percentY(10))
+  reverb_knob = cp5.addKnob("reverb")
+    .setPosition(percentX(35),percentY(10))
     .setRadius(50)
     .setRange(0,1)
     .setValue(0.7)
@@ -86,8 +79,18 @@ void setup(){
     .setColorActive(color(237,218,218))
     .setColorCaptionLabel(color(20,20,20));
   
-  filter_knob = cp5.addKnob("filter")
-    .setPosition(percentX(70),percentY(10))
+  attack_knob = cp5.addKnob("attack")
+    .setPosition(percentX(55),percentY(10))
+    .setRadius(50)
+    .setRange(0,1)
+    .setValue(1)
+    .setColorForeground(color(201,112,112))
+    .setColorBackground(color(240,201,201))
+    .setColorActive(color(237,218,218))
+    .setColorCaptionLabel(color(20,20,20));
+  
+  release_knob = cp5.addKnob("release")
+    .setPosition(percentX(75),percentY(10))
     .setRadius(50)
     .setRange(0,1)
     .setValue(1)
@@ -135,5 +138,15 @@ void mouseDragged() {
 
 }
 
-void mouseReleased() {
+
+void controlEvent(ControlEvent event) {
+  OscMessage myMessage = new OscMessage("/knob");
+  
+  myMessage.add(amplitude);
+  myMessage.add(reverb);
+  myMessage.add(attack);
+  myMessage.add(release);
+  
+  oscP5.send(myMessage, myRemoteLocation);
+  myMessage.print();
 }
