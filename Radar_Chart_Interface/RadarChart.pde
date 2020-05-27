@@ -155,7 +155,12 @@ class RadarChart{
     float angle = _dimNum*angleStep;
     float actualLength = sqrt(pow((_mouseX-centerX),2)+pow((_mouseY-centerY),2))/axisLength;
     if(actualLength > 1){
+      if(actualLength < 1.05){
+        actualLength=1;
+      }
+      else{
       actualLength=-1;
+      }
     }
     return(actualLength);
   } 
