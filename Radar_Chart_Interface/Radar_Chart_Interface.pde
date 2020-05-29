@@ -30,10 +30,13 @@ int intervalNumber;
 int manipulatedDim;
 int hooveredDim;
 
+PImage spyder;
+float panX;
+Boolean panSetting;
 
 void setup(){  
   
-  size(800,700);  //screen size set to 800*600  
+  size(800,800);  //screen size set to 800*600  
   
   //initialise the OSC communication
   oscP5 = new OscP5(this, 12000);
@@ -56,7 +59,7 @@ void setup(){
   }
   
   
-  rc = new RadarChart(percentX(25),percentY(30),percentX(50),percentY(70),percentX(5),percentY(5),intervalNumber,dimNumber,percentX(7),percentY(5), axes);
+  rc = new RadarChart(percentX(25),percentY(25),percentX(50),percentY(60),percentX(5),percentY(5),intervalNumber,dimNumber,percentX(7),percentY(5), axes);
   
   cp5 = new ControlP5(this);
   amplitude_knob = cp5.addKnob("amplitude")
@@ -98,6 +101,10 @@ void setup(){
     .setColorBackground(color(240,201,201))
     .setColorActive(color(237,218,218))
     .setColorCaptionLabel(color(20,20,20));
+    
+  spyder = loadImage("spyder.png");
+  panX = width/2;
+  panSetting = false;
 }
 
 void draw(){
@@ -109,6 +116,22 @@ void draw(){
     hooveredDim = rc.getAxisNum(mouseX, mouseY);
   }
   
+  image(spyder, panX-percentX(5), percentY(85),percentX(10),percentY(10));
+  if(!panSetting){
+    PFont myFont = createFont("SansSerif", 12);
+    textFont(myFont);
+    fill(#000000);  
+    textAlign(CENTER, CENTER);
+    text("Pan me",panX,percentY(96));
+  }
+  if(mouseX>rc.chartBeginingX && mouseY > rc.chartBeginingY && mouseX < rc.chartBeginingX+rc.chartWidth && mouseY < rc.chartBeginingY+rc.chartHeight ){
+    cursor(spyder,0,0);
+  }
+  else if(mouseY>percentY(85) && mouseY<percentY(95) && mouseX>panX-percentX(5) && mouseX<panX+percentX(5)){
+    cursor(HAND);
+  }
+  else{
+  cursor(ARROW);}
 }
 
 void mousePressed() {
@@ -117,7 +140,9 @@ void mousePressed() {
     print("manipulating harm : "+manipulatedDim);
     print("\n");
     chartPoints[manipulatedDim].setValue(rc.getLength(mouseX, mouseY,manipulatedDim));
-
+  }
+  if(mouseY>percentY(85) && mouseY<percentY(95) && mouseX>panX-percentX(5) && mouseX<panX+percentX(5)){
+    panSetting = true;
   }
 }
 
@@ -135,7 +160,13 @@ void mouseDragged() {
       chartPoints[manipulatedDim].setValue(rc.getLength(mouseX, mouseY,manipulatedDim));
     }
   }
+  if(panSetting){
+    setPanX(mouseX);
+  }
+}
 
+void mouseReleased(){
+  panSetting=false;
 }
 
 
@@ -149,4 +180,27 @@ void controlEvent(ControlEvent event) {
   
   oscP5.send(myMessage, myRemoteLocation);
   myMessage.print();
+}
+
+void setPanX(float _panX){  //TODO : add center behaviour + osc messages.
+  if(_panX>percentX(47) && _panX<percentX(53)){
+    panX = percentX(50);
+  }
+  else if(_panX>percentX(10) && _panX<percentX(90)){
+    panX = _panX;
+  }
+  else if(_panX<percentX(10)){
+    panX = percentX(10);
+  }
+  else if(_panX>percentX(90)){
+    panX = percentX(90);
+  }
+  OscMessage myMessage = new OscMessage("/pan");
+  myMessage.add(normalizedPanX(panX));
+  oscP5.send(myMessage, myRemoteLocation);
+  myMessage.print();
+}
+
+float normalizedPanX(float _panX){   // normalise panX between -1 and +1
+  return(((_panX-percentX(10))/percentX(40))-1);
 }
