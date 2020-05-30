@@ -7,7 +7,7 @@ void setupBackground(){
   // Header label
   PFont myFont = createFont("SansSerif", 15);
   textFont(myFont);
-  fill(#000000);  
+  fill(backgroundColor);  
   textAlign(CENTER, CENTER);
   text("Controls HW3",percentX(50), percentY(5));   
 }

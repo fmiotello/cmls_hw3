@@ -84,13 +84,14 @@ class RadarChart{
       axisPointsX[i] = getX(angle, axisLength + labelHeight/3);
       axisPointsY[i] = getY(angle, axisLength + labelHeight/3);
       
+      // drawing the axis
       if(i==hooveredDim){
-        stroke(0);
+        stroke(selectedBranchColor);
         strokeWeight(1.2);
         line(centerX,centerY,axisPointsX[i],axisPointsY[i]);    //draw the axis line
       }
       else{
-        stroke(#ADA5A8);
+        stroke(webColor);
         strokeWeight(1);
         line(centerX,centerY,axisPointsX[i],axisPointsY[i]);    //draw the axis line
       }
@@ -99,20 +100,19 @@ class RadarChart{
       
       displayLabels(angle, axeList[i]); 
       
-      for(int index = 0; index < intervals; index++, len += intervalLength){
+      for(int index = 0; index < intervals; index++, len += intervalLength){  //for each interval
         xValue = getX(angle, len);
         yValue = getY(angle, len);
         
         if(index == intervals/2-1 || index == intervals-1){
           strokeWeight(4);  //mark all the interval points on the axes drawn
-          stroke(#a80f52);}
+          stroke(webPointColor);}
         else{
           strokeWeight(4);  //mark all the interval points on the axes drawn
-          stroke(#ADA5A8);}
-        
+          stroke(webColor);}
         point(xValue,yValue);
         strokeWeight(1);
-        stroke(0);
+        line(getX(angle-angleStep, len),getY(angle-angleStep, len),xValue,yValue);
       }    
     }
   }
@@ -120,7 +120,9 @@ class RadarChart{
   
   void addValuesInChart(PointValue[] pointValues){
     float angle = -90;
-    fill(#ffdf00, 70);
+    strokeWeight(1);
+    stroke(plotShapeColor);
+    fill(plotShapeFillColor, plotShapeTranslucidity);
     beginShape();
     for(int i = 0; i < dimensions; i++, angle += angleStep){
       vertex(getX(angle, axisLength*pointValues[i].value), getY(angle, axisLength*pointValues[i].value));
