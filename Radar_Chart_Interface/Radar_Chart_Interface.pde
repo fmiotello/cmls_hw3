@@ -1,6 +1,6 @@
 // TODO : 
 //
-//  - branch in spyder web
+//  - branch in spider web
 //  - set number harmo ( set the lasts to 0 + trransmit it and the number of harmos)
 //  - parameters for colors
 //
@@ -24,7 +24,7 @@ Knob attack_knob;
 Knob release_knob;
 
 float master_volume;
-float spyder_effect;
+float spider_effect;
 float attack;
 float release;
 
@@ -55,7 +55,7 @@ void setup() {
 
   size(800, 800);  //screen size set to 800*800
   
-  // COLORS for the spyderPlot (directly in the setup (e.g for the knobs))
+  // COLORS for the spiderPlot (directly in the setup (e.g for the knobs))
   backgroundColor = #000000;
   webColor = #ADA5A8;
   webPointColor = #A80F52;
@@ -99,7 +99,7 @@ void setup() {
     .setColorActive(color(237, 218, 218))
     .setColorCaptionLabel(color(20, 20, 20));
 
-  reverb_knob = cp5.addKnob("spyder_effect")
+  reverb_knob = cp5.addKnob("spider_effect")
     .setPosition(percentX(35), percentY(10))
     .setRadius(50)
     .setRange(0, 1)
@@ -129,8 +129,8 @@ void setup() {
     .setColorActive(color(237, 218, 218))
     .setColorCaptionLabel(color(20, 20, 20));
 
-  // load the spyder image for the pan setting and the cursor when hoovering the spyder plot.
-  spider = loadImage("spider.png");
+  // load the spider image for the pan setting and the cursor when hoovering the spider plot.
+  spider = loadImage("pan.png");
   spider_cursor = loadImage("spider.png");
   spider_cursor.resize(25,35);
   panX = width/2;
@@ -147,7 +147,7 @@ void draw() {
     hooveredDim = rc.getAxisNum(mouseX, mouseY);
   }
   
-  // draw the spyder to set the paning, at the abscisse corresponding to the actual paning
+  // draw the spider to set the paning, at the abscisse corresponding to the actual paning
   image(spider, panX-percentX(5), percentY(85),percentX(10),percentY(10));
   if (!panSetting) {
     PFont myFont = createFont("SansSerif", 12);
@@ -204,7 +204,7 @@ void controlEvent(ControlEvent event) {
   OscMessage myMessage = new OscMessage("/knob");
 
   myMessage.add(master_volume);
-  myMessage.add(spyder_effect);
+  myMessage.add(spider_effect);
   myMessage.add(attack);
   myMessage.add(release);
 
