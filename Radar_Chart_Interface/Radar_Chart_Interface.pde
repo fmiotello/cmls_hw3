@@ -20,11 +20,14 @@ NetAddress myRemoteLocation;
 ControlP5 cp5;
 Knob amplitude_knob;
 Knob reverb_knob;
+Slider harmonicsNumber_slider;
+Textlabel harmonicNumberLabel;
 Knob attack_knob;
 Knob release_knob;
 
 float master_volume;
 float spider_effect;
+int harmonics_number;
 float attack;
 float release;
 
@@ -89,8 +92,27 @@ void setup() {
 
   // create our knobs.
   cp5 = new ControlP5(this);
+  
+
+  harmonicsNumber_slider = cp5.addSlider("harmonics_number");  // needs to be defined before other knobs because of the if statement in the ControlEvent method.
+    harmonicsNumber_slider
+    .setPosition(percentX(49), percentY(12))
+    .setRange(5, 15)
+    .setSize(percentX(3),percentY(12))
+    .setValue(10)
+    .setCaptionLabel("")
+    .setColorForeground(color(201, 112, 112))
+    .setColorBackground(color(240, 201, 201))
+    .setColorActive(color(237, 218, 218))
+    .setColorCaptionLabel(color(20, 20, 20));
+    
+  harmonicNumberLabel = cp5.addLabel("HARMONIC NUMBER")
+    .setPosition(percentX(44), percentY(25))
+    .setColor(0)
+    .setFont(createFont("Arial", 9));
+   
   amplitude_knob = cp5.addKnob("master_volume")
-    .setPosition(percentX(15), percentY(10))
+    .setPosition(percentX(10), percentY(10))
     .setRadius(50)
     .setRange(0, 1)
     .setValue(1)
@@ -100,7 +122,7 @@ void setup() {
     .setColorCaptionLabel(color(20, 20, 20));
 
   reverb_knob = cp5.addKnob("spider_effect")
-    .setPosition(percentX(35), percentY(10))
+    .setPosition(percentX(30), percentY(10))
     .setRadius(50)
     .setRange(0, 1)
     .setValue(0.7)
@@ -110,7 +132,7 @@ void setup() {
     .setColorCaptionLabel(color(20, 20, 20));
 
   attack_knob = cp5.addKnob("attack")
-    .setPosition(percentX(55), percentY(10))
+    .setPosition(percentX(60), percentY(10))
     .setRadius(50)
     .setRange(0, 1)
     .setValue(1)
@@ -120,7 +142,7 @@ void setup() {
     .setColorCaptionLabel(color(20, 20, 20));
 
   release_knob = cp5.addKnob("release")
-    .setPosition(percentX(75), percentY(10))
+    .setPosition(percentX(80), percentY(10))
     .setRadius(50)
     .setRange(0, 1)
     .setValue(1)
@@ -201,15 +223,26 @@ void mouseReleased() {
 
 
 void controlEvent(ControlEvent event) {
-  OscMessage myMessage = new OscMessage("/knob");
-
-  myMessage.add(master_volume);
-  myMessage.add(spider_effect);
-  myMessage.add(attack);
-  myMessage.add(release);
-
-  oscP5.send(myMessage, myRemoteLocation);
-  myMessage.print();
+  
+  if(event.getName()==harmonicsNumber_slider.getName()){
+    OscMessage myMessage = new OscMessage("/harmonicsNumber");
+    myMessage.add(harmonics_number);
+    oscP5.send(myMessage, myRemoteLocation);
+    myMessage.print();
+  }
+  
+  else{
+    OscMessage myMessage = new OscMessage("/knob");
+  
+    myMessage.add(master_volume);
+    myMessage.add(spider_effect);
+    myMessage.add(attack);
+    myMessage.add(release);
+  
+    oscP5.send(myMessage, myRemoteLocation);
+    myMessage.print();
+  }
+  
 }
 
 void setPanX(float _panX) {
