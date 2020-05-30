@@ -7,7 +7,7 @@ s.waitForBoot({
 	//GUI vars
 	var win, subwin, multiSlider,singleNoteButton, singleNoteButton1;
 	//synth vars
-	var spectrum, numharm, partialFreq, partialAmpl, percussiveOut, att = 0.01, rel = 2, keys;
+	var spectrum, numharm, partialFreq, partialAmpl, percussiveOut, att = 0.01, rel = 2, keys, masterVolume, vibrato, pan;
 
 	//****************** INITIALIZATION **************************
 
@@ -23,7 +23,7 @@ s.waitForBoot({
 
 	// Initialize array of partial relative frequencies with rnd values.
 	//For now we dont have the detuning as an external parameter.
-	partialFreq = Array.newClear(numharm);
+	partialFreq = List.newClear(numharm);
 	partialFreq.do({
 		arg item, count;
 		partialFreq[count] = rrand(0.45,0.55).round(0.01).linlin(0, 1, -0.2, 0.2).round(0.01) + count + 1;
@@ -31,7 +31,7 @@ s.waitForBoot({
 	postln("Relative frequencies of partials:");
 	postln(partialFreq);
 
-	partialAmpl = Array.newClear(numharm);
+	partialAmpl = List.newClear(numharm);
 	partialAmpl.do({
 		arg item, count;
 		partialAmpl[count] = 0.5;
@@ -39,15 +39,15 @@ s.waitForBoot({
 	postln("Amplitudes of partials: ");
 	postln(partialAmpl); postln("**********************************************");
 
-
+	masterVolume = 1;
 	keys = Array.newClear(128);
 
 	//****************** SYNTH DEF **************************
 	//to do: add general volume as a parameter (velocity of a key)
 
 	SynthDef("add-synth", {
-		arg out = 0, pan = 0, fundamental = 120, partial = 1, amp = 0.5, att = 0.01, rel = 2, vel = 1, vibrato = 10;
-		var sig = SinOsc.ar(fundamental * partial + SinOsc.kr(vibrato, mul: vibrato/2), 0, Lag.kr(vel*amp/numharm, 3));
+		arg out = 0, pan = 0, fundamental = 120, partial = 1, amp = 0.5, att = 0.01, rel = 2, vel = 1, vibrato = 10, numharmonic = 5;
+		var sig = SinOsc.ar(fundamental * partial + SinOsc.kr(vibrato, mul: vibrato/2), 0, Lag.kr(vel*amp/numharmonic, 3));
 		var env = EnvGen.kr(Env.perc(att, rel), doneAction: 2);
 		sig = sig*env*0.8;
 		Out.ar(out, Pan2.ar(sig, pan));
@@ -57,28 +57,41 @@ s.waitForBoot({
 
 	NetAddr("127.0.0.1",57120);
 
-	OSCdef('OSCreceiver',{
+	OSCdef('OSCHarmonic',{
 		arg msg;
 
-		var numOfPar = numharm; //e.g. numOfPar = numharm + 5 if we have 5 other parameters to control
+		postln("harm");
 
-		//Check if the parameters of the message are aligned with the parameters to be controlled
-		if(numOfPar > msg.size){
-			//rel = msg[1];
-			//att = msg[2];
-			var diff = numOfPar - numharm;
-			//each knob corresponds to amplitude of one harmonic
-			(msg.size - diff - 1).do({
-				arg i;
-				partialAmpl[i] = msg[i + diff + 1];
-			});
-			postln("partialAmpl: "+partialAmpl);
-		} {postln("Error: There are more elements in the message than the parameters")};
+		try{
+			if(msg.size > 2) {
+				partialAmpl[msg[1]] = msg[2];
+			}  {postln("Error: Empty msg")};
+
+		} {partialAmpl.add(msg[2]); partialFreq.add(partialFreq.size+1); numharm = partialAmpl.size}
+
+	},"/harmonic");
+
+	OSCdef('OSCKnob',{
+		arg msg;
+		postln("knob");
+
+		if(msg.size > 2) {
+			masterVolume = msg[1];
+			vibrato = msg[2];
+			att = msg[3];
+			rel = msg[4];
+		}  {postln("Error: Empty msg")};
+	},"/knob");
 
 
-		//setting attack and release parameters
-	},
-	"/pos");
+	OSCdef('OSCPan',{
+		arg msg;
+		postln("pan");
+
+		if(msg.size > 1) {
+			pan = msg[1];
+		}  {postln("Error: Empty msg")};
+	},"/pan");
 
 
 	//****************** MIDI **************************
@@ -93,7 +106,7 @@ s.waitForBoot({
 			keys.put(num, nil);
 		});
 
-		spectrum = Array.fill(numharm, {arg i; Synth("add-synth", [\fundamental, num.midicps, \partial, partialFreq[i], \amp, partialAmpl[i], \att, att, \rel, rel, \vel, vel/127], addAction: \addToTail)});
+		spectrum = Array.fill(numharm, {arg i; Synth("add-synth", [\fundamental, num.midicps, \partial, partialFreq[i], \amp, partialAmpl[i], \att, att, \rel, rel, \vel, vel/127, \vibrato, vibrato, \pan, pan, \numharmonic, numharm], addAction: \addToTail)});
 
 
 		keys.put(num, node);
@@ -156,9 +169,11 @@ s.waitForBoot({
 	singleNoteButton.states = [["Note"+150]];
 	singleNoteButton.action = {
 		//spectrum = Synth.tail(nil, "additive-synth", [\fundamental, 150]); //, \amp, vel/127]);
-		spectrum = Array.fill(numharm, {arg i; Synth("add-synth", [\fundamental, 150, \partial, partialFreq[i], \amp, partialAmpl[i], \att, att, \rel, rel], addAction: \addToTail);});
+		postln(numharm);
+		spectrum = Array.fill(numharm, {arg i; Synth("add-synth", [\fundamental, 150, \partial, partialFreq[i], \amp, partialAmpl[i], \att, att, \rel, rel, \vibrato, vibrato, \pan, pan, \numharmonic, numharm], addAction: \addToTail);});
 		"bang!".postln;
 		postln(partialAmpl);
+		postln(partialFreq);
 	};
 
 	singleNoteButton1 = Button(subwin, Rect(100,10,70,80));
