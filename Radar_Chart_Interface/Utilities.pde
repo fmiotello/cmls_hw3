@@ -2,14 +2,16 @@
 
 void setupBackground(){
   
-  background(#DDDDDD);  //back ground color white
+  background(#012437);  //background color dark blue
  
   // Header label
-  PFont myFont = createFont("SansSerif", 15);
-  textFont(myFont);
-  fill(backgroundColor);  
+  //PFont spiderFont = createFont("HOMOARAK.TTF", 30);
+  PFont spiderFont = createFont("TheAmazingSpider-Man.ttf", 35);
+  //PFont spiderFont = createFont("MontserratAlternates-Bold.ttf", 35);
+  textFont(spiderFont);
+  fill(#FEA001);  
   textAlign(CENTER, CENTER);
-  text("Controls HW3",percentX(50), percentY(5));   
+  text("SYNTHESPIDER",percentX(50), percentY(6));   
 }
 
 //methods to use percentage instead of absolute values

@@ -3,7 +3,7 @@
 //  - branch in spider web
 //  - set number harmo ( set the lasts to 0 + trransmit it and the number of harmos)
 //  - parameters for colors
-//
+//  - how to change default text font (around axis)
 
 
 
@@ -53,19 +53,48 @@ int plotShapeColor;
 int plotShapeFillColor;
 int plotShapeTranslucidity;
 int selectedBranchColor;
+PFont spiderFont;
+int foregroundKnobColor;
+int backgroundKnobColor;
+int activeKnobColor;
+int textColor;
+int lineColor;
+int innerCircleColor;
+int sidePanColor;
+
+
+//COLOR SPECTRUM TO USE
+
+int lightyellow = #F1B434;
+int darkyellow = #FEA001;
+int lightpurple = #C25B67;
+int darkpurple = #6A2537;
+int lightblue = #D2E3E6;
+int darkblue = #012437;
+int middleblue = color(157, 211, 215);
 
 void setup() {  
 
-  size(800, 800);  //screen size set to 800*800
+  size(900, 900);  //screen size set to 800*800
+
   
-  // COLORS for the spiderPlot (directly in the setup (e.g for the knobs))
-  backgroundColor = #000000;
-  webColor = #ADA5A8;
-  webPointColor = #A80F52;
-  plotShapeTranslucidity = 70; // %
-  plotShapeColor = #ffffff;
-  plotShapeFillColor = #ffdf00;
-  selectedBranchColor = #000000;
+  // VISUAL VARIABLES
+  webColor = middleblue;
+  webPointColor = lightyellow;
+  plotShapeTranslucidity = 120; // % NOT A PERCENTAGE, BUT 0:255
+  plotShapeColor = darkyellow;
+  plotShapeFillColor = lightpurple;
+  selectedBranchColor = lightyellow;
+  foregroundKnobColor = lightpurple;
+  backgroundKnobColor = color(130, 50, 70, 120);
+  activeKnobColor = color(167, 211, 215, 180);
+  innerCircleColor = color(9,72,100,30);
+  sidePanColor = lightpurple;
+  textColor = lightblue;
+  lineColor = darkyellow;
+  spiderFont = createFont("TheAmazingSpider-Man.ttf",17);
+  //spiderFont = createFont("MontserratAlternates-Bold.ttf", 18);
+
 
   //initialise the OSC communication
   oscP5 = new OscP5(this, 12000);
@@ -80,6 +109,7 @@ void setup() {
 
   chartPoints = new PointValue[dimNumber];
 
+  textFont(spiderFont);
   for (int i = 0; i<dimNumber; i++) {
     chartPoints[i] = new PointValue(random(1), i);
     if (i!=0) {
@@ -88,68 +118,75 @@ void setup() {
   }
 
   // create the radarChart instance which permit to manipulate and draw the radar plot.
-  rc = new RadarChart(percentX(25), percentY(25), percentX(50), percentY(60), percentX(5), percentY(5), intervalNumber, dimNumber, percentX(7), percentY(5), axes);
+  rc = new RadarChart(percentX(35), percentY(28), percentX(50), percentY(60), percentX(5), percentY(5), intervalNumber, dimNumber, percentX(7), percentY(5), axes);
 
   // create our knobs.
   cp5 = new ControlP5(this);
-  
+
 
   harmonicsNumber_slider = cp5.addSlider("harmonics_number");  // needs to be defined before other knobs because of the if statement in the ControlEvent method.
     harmonicsNumber_slider
-    .setPosition(percentX(49), percentY(12))
+    .setPosition(percentX(15), percentY(50))
     .setRange(5, 15)
-    .setSize(percentX(3),percentY(12))
+    .setSize(percentX(4),percentY(18))
     .setValue(10)
     .setCaptionLabel("")
-    .setColorForeground(color(201, 112, 112))
-    .setColorBackground(color(240, 201, 201))
-    .setColorActive(color(237, 218, 218))
-    .setColorCaptionLabel(color(20, 20, 20));
-    
+    .setColorForeground(foregroundKnobColor)
+    .setColorBackground(backgroundKnobColor)
+    .setColorActive(activeKnobColor);
+      
   harmonicNumberLabel = cp5.addLabel("HARMONIC NUMBER")
-    .setPosition(percentX(44), percentY(25))
-    .setColor(0)
-    .setFont(createFont("Arial", 9));
+    .setPosition(percentX(10), percentY(70))
+    .setColor(textColor)
+    .setFont(spiderFont);
+
    
-  amplitude_knob = cp5.addKnob("master_volume")
-    .setPosition(percentX(10), percentY(10))
+   
+  amplitude_knob = cp5.addKnob("master volume")
+    .setPosition(percentX(15), percentY(15))
     .setRadius(50)
     .setRange(0, 1)
     .setValue(1)
-    .setColorForeground(color(201, 112, 112))
-    .setColorBackground(color(240, 201, 201))
-    .setColorActive(color(237, 218, 218))
-    .setColorCaptionLabel(color(20, 20, 20));
+    .setColorForeground(foregroundKnobColor)
+    .setColorBackground(backgroundKnobColor)
+    .setColorActive(activeKnobColor);
+    
+  cp5.getController("master volume").getCaptionLabel().setColor(textColor).setFont(spiderFont);
 
-  reverb_knob = cp5.addKnob("spider_effect")
-    .setPosition(percentX(30), percentY(10))
+  reverb_knob = cp5.addKnob("spider effect")
+    .setPosition(percentX(35), percentY(15))
     .setRadius(50)
     .setRange(0, 1)
     .setValue(0.7)
-    .setColorForeground(color(201, 112, 112))
-    .setColorBackground(color(240, 201, 201))
-    .setColorActive(color(237, 218, 218))
-    .setColorCaptionLabel(color(20, 20, 20));
+    .setColorForeground(foregroundKnobColor)
+    .setColorBackground(backgroundKnobColor)
+    .setColorActive(activeKnobColor);
+
+  cp5.getController("spider effect").getCaptionLabel().setColor(textColor).setFont(spiderFont);
+
 
   attack_knob = cp5.addKnob("attack")
-    .setPosition(percentX(60), percentY(10))
+    .setPosition(percentX(55), percentY(15))
     .setRadius(50)
     .setRange(0, 1)
-    .setValue(1)
-    .setColorForeground(color(201, 112, 112))
-    .setColorBackground(color(240, 201, 201))
-    .setColorActive(color(237, 218, 218))
-    .setColorCaptionLabel(color(20, 20, 20));
+    .setValue(0.2)
+    .setColorForeground(foregroundKnobColor)
+    .setColorBackground(backgroundKnobColor)
+    .setColorActive(activeKnobColor);
+    
+  cp5.getController("attack").getCaptionLabel().setColor(textColor).setFont(spiderFont);
+ 
 
   release_knob = cp5.addKnob("release")
-    .setPosition(percentX(80), percentY(10))
+    .setPosition(percentX(75), percentY(15))
     .setRadius(50)
     .setRange(0, 1)
-    .setValue(1)
-    .setColorForeground(color(201, 112, 112))
-    .setColorBackground(color(240, 201, 201))
-    .setColorActive(color(237, 218, 218))
-    .setColorCaptionLabel(color(20, 20, 20));
+    .setValue(0.5)
+    .setColorForeground(foregroundKnobColor)
+    .setColorBackground(backgroundKnobColor)
+    .setColorActive(activeKnobColor);
+    
+  cp5.getController("release").getCaptionLabel().setColor(textColor).setFont(spiderFont); 
 
   // load the spider image for the pan setting and the cursor when hoovering the spider plot.
   spider = loadImage("pan.png");
@@ -159,10 +196,74 @@ void setup() {
   panSetting = false;
 }
 
+void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) {
+
+  noFill();
+
+  if (axis == 1) {  // Top to bottom gradient
+    for (int i = y; i <= y+h; i++) {
+      float inter = map(i, y, y+h, 0, 1);
+      color c = lerpColor(c1, c2, inter);
+      stroke(c);
+      line(x, i, x+w, i);
+    }
+  }  
+  else if (axis == 2) {  // Left to right gradient
+    for (int i = x; i <= x+w; i++) {
+      float inter = map(i, x, x+w, 0, 1);
+      color c = lerpColor(c1, c2, inter);
+      stroke(c);
+      line(i, y, i, y+h);
+    }
+  }
+}
+
+void createGradient (float x, float y, float radius, color c1, color c2){
+  float px = 0, py = 0, angle = 0;
+
+  // calculate differences between color components 
+  float deltaR = red(c2)-red(c1);
+  float deltaG = green(c2)-green(c1);
+  float deltaB = blue(c2)-blue(c1);
+  // hack to ensure there are no holes in gradient
+  // needs to be increased, as radius increases
+  float gapFiller = 32.0;
+
+  for (int i=0; i< radius; i++){
+    for (float j=0; j<360; j+=1.0/gapFiller){
+      px = x+cos(radians(angle))*i;
+      py = y+sin(radians(angle))*i;
+      angle+=1.0/gapFiller;
+      color c = color(
+      (red(c1)+(i)*(deltaR/radius)),
+      (green(c1)+(i)*(deltaG/radius)),
+      (blue(c1)+(i)*(deltaB/radius)) 
+        );
+      set(int(px), int(py), c);      
+    }
+  }
+}
+
 void draw() {
   setupBackground();
+  
+  createGradient(percentX(60), percentY(58), 170, innerCircleColor, darkblue);
+
   rc.drawChart(); //draw the skeleton chart. 
   rc.addValuesInChart(chartPoints);  // draw the value over the skeleton.
+  
+  stroke(lineColor);
+  fill(darkblue);
+  strokeWeight(2);
+  rect(percentX(0), percentY(84), percentX(110), percentY(14), 10);
+  
+  strokeWeight(3);
+  rect(percentX(10), percentY(13), percentX(80), percentY(18), 10);
+  
+  
+  setGradient(percentX(-30), percentY(85), percentX(70), percentY(12), sidePanColor, darkblue, 2);
+  setGradient(percentX(60), percentY(85), percentX(70), percentY(12), darkblue, sidePanColor, 2);
+
 
   // get the hoovered axis if hoovering the web
   if (mouseX>rc.chartBeginingX && mouseY > rc.chartBeginingY && mouseX < rc.chartBeginingX+rc.chartWidth && mouseY < rc.chartBeginingY+rc.chartHeight ) {
@@ -172,11 +273,10 @@ void draw() {
   // draw the spider to set the paning, at the abscisse corresponding to the actual paning
   image(spider, panX-percentX(5), percentY(85),percentX(10),percentY(10));
   if (!panSetting) {
-    PFont myFont = createFont("SansSerif", 12);
-    textFont(myFont);
-    fill(#000000);  
+    textFont(spiderFont);
+    fill(textColor);  
     textAlign(CENTER, CENTER);
-    text("Pan me", panX, percentY(96));
+    text("PAN ME", panX, percentY(96));
   }
   // set the shape of the cursor accordingly to what is hoovered currently.
   if (mouseX>rc.chartBeginingX && mouseY > rc.chartBeginingY && mouseX < rc.chartBeginingX+rc.chartWidth && mouseY < rc.chartBeginingY+rc.chartHeight ) {
