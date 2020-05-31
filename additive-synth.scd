@@ -93,7 +93,7 @@ s.waitForBoot({
 
 		if(msg.size > 2) {
 			masterVolume = msg[1];
-			vibrato = msg[2]*10;
+			vibrato = msg[2]*15;
 			attack = msg[3];
 			release = msg[4]*4;
 		}  {postln("Error: Empty msg")};
