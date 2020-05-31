@@ -35,7 +35,7 @@ RadarChart rc;
 
 PointValue[] chartPoints;
 Axis[] axes;
-int dimNumber;
+int maxDimNumber;
 int intervalNumber;
 
 int manipulatedDim;
@@ -101,24 +101,24 @@ void setup() {
   myRemoteLocation = new NetAddress("127.0.0.1", 57120);
 
   // initialise the axis +  each parameter with a default value
-  dimNumber = 15;
+  maxDimNumber = 15;
   intervalNumber = 10;
 
-  axes = new Axis[dimNumber];
+  axes = new Axis[maxDimNumber];
   axes[0] = new Axis(0, "Fundamental");
 
-  chartPoints = new PointValue[dimNumber];
+  chartPoints = new PointValue[maxDimNumber];
 
   textFont(spiderFont);
-  for (int i = 0; i<dimNumber; i++) {
-    chartPoints[i] = new PointValue(random(1), i);
+  for (int i = 0; i<maxDimNumber; i++) {
+    chartPoints[i] = new PointValue(random(0.1,1), i);
     if (i!=0) {
       axes[i] = new Axis(i, "Harmonic "+i);
     }
   }
 
   // create the radarChart instance which permit to manipulate and draw the radar plot.
-  rc = new RadarChart(percentX(35), percentY(28), percentX(50), percentY(60), percentX(5), percentY(5), intervalNumber, dimNumber, percentX(7), percentY(5), axes);
+  rc = new RadarChart(percentX(35), percentY(28), percentX(50), percentY(60), percentX(5), percentY(5), intervalNumber, maxDimNumber, percentX(7), percentY(5), axes);
 
   // create our knobs.
   cp5 = new ControlP5(this);
@@ -127,9 +127,9 @@ void setup() {
   harmonicsNumber_slider = cp5.addSlider("harmonics_number");  // needs to be defined before other knobs because of the if statement in the ControlEvent method.
     harmonicsNumber_slider
     .setPosition(percentX(15), percentY(50))
+    .setValue(10)
     .setRange(5, 15)
     .setSize(percentX(4),percentY(18))
-    .setValue(10)
     .setCaptionLabel("")
     .setColorForeground(foregroundKnobColor)
     .setColorBackground(backgroundKnobColor)
@@ -142,8 +142,9 @@ void setup() {
 
    
    
-  amplitude_knob = cp5.addKnob("master volume")
+  amplitude_knob = cp5.addKnob("master_volume")
     .setPosition(percentX(15), percentY(15))
+    .setCaptionLabel("master volume")
     .setRadius(50)
     .setRange(0, 1)
     .setValue(1)
@@ -151,10 +152,11 @@ void setup() {
     .setColorBackground(backgroundKnobColor)
     .setColorActive(activeKnobColor);
     
-  cp5.getController("master volume").getCaptionLabel().setColor(textColor).setFont(spiderFont);
+  cp5.getController("master_volume").getCaptionLabel().setColor(textColor).setFont(spiderFont);
 
-  reverb_knob = cp5.addKnob("spider effect")
+  reverb_knob = cp5.addKnob("spider_effect")
     .setPosition(percentX(35), percentY(15))
+    .setCaptionLabel("spider effect")
     .setRadius(50)
     .setRange(0, 1)
     .setValue(0.7)
@@ -162,7 +164,7 @@ void setup() {
     .setColorBackground(backgroundKnobColor)
     .setColorActive(activeKnobColor);
 
-  cp5.getController("spider effect").getCaptionLabel().setColor(textColor).setFont(spiderFont);
+  cp5.getController("spider_effect").getCaptionLabel().setColor(textColor).setFont(spiderFont);
 
 
   attack_knob = cp5.addKnob("attack")
@@ -302,6 +304,11 @@ void controlEvent(ControlEvent event) {
     myMessage.add(harmonics_number);
     oscP5.send(myMessage, myRemoteLocation);
     myMessage.print();
+    rc.dimensions = harmonics_number; 
+    rc.angleStep = 360 / harmonics_number;
+    for(int i = harmonics_number; i<maxDimNumber; i++){
+      chartPoints[i].setValue(0);
+    }
   }
   
   else{
