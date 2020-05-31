@@ -201,7 +201,7 @@ void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) 
   noFill();
 
   if (axis == 1) {  // Top to bottom gradient
-    for (int i = y; i <= y+h; i++) {
+    for (int i = y; i <= y+h; i+=2) {
       float inter = map(i, y, y+h, 0, 1);
       color c = lerpColor(c1, c2, inter);
       stroke(c);
@@ -209,7 +209,7 @@ void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) 
     }
   }  
   else if (axis == 2) {  // Left to right gradient
-    for (int i = x; i <= x+w; i++) {
+    for (int i = x; i <= x+w; i+=2) {
       float inter = map(i, x, x+w, 0, 1);
       color c = lerpColor(c1, c2, inter);
       stroke(c);
@@ -218,37 +218,10 @@ void setGradient(int x, int y, float w, float h, color c1, color c2, int axis ) 
   }
 }
 
-void createGradient (float x, float y, float radius, color c1, color c2){
-  float px = 0, py = 0, angle = 0;
-
-  // calculate differences between color components 
-  float deltaR = red(c2)-red(c1);
-  float deltaG = green(c2)-green(c1);
-  float deltaB = blue(c2)-blue(c1);
-  // hack to ensure there are no holes in gradient
-  // needs to be increased, as radius increases
-  float gapFiller = 32.0;
-
-  for (int i=0; i< radius; i++){
-    for (float j=0; j<360; j+=1.0/gapFiller){
-      px = x+cos(radians(angle))*i;
-      py = y+sin(radians(angle))*i;
-      angle+=1.0/gapFiller;
-      color c = color(
-      (red(c1)+(i)*(deltaR/radius)),
-      (green(c1)+(i)*(deltaG/radius)),
-      (blue(c1)+(i)*(deltaB/radius)) 
-        );
-      set(int(px), int(py), c);      
-    }
-  }
-}
 
 void draw() {
   setupBackground();
   
-  createGradient(percentX(60), percentY(58), 170, innerCircleColor, darkblue);
-
   rc.drawChart(); //draw the skeleton chart. 
   rc.addValuesInChart(chartPoints);  // draw the value over the skeleton.
   
