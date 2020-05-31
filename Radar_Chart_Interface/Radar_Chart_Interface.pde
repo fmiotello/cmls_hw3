@@ -191,7 +191,7 @@ void setup() {
   // load the spider image for the pan setting and the cursor when hoovering the spider plot.
   spider = loadImage("pan.png");
   spider_cursor = loadImage("spider.png");
-  spider_cursor.resize(25,35);
+  // spider_cursor.resize(25,35);
   panX = width/2;
   panSetting = false;
 }
