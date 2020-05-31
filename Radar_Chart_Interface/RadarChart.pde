@@ -179,9 +179,9 @@ class RadarChart{
     float xValue = getX(ang, axisLength + labelHeight/4);
     float yValue = getY(ang, axisLength + labelHeight/4);
       
-    PFont myFont = createFont("SansSerif", 10);
+    PFont myFont = createFont("Bebas-Regular.ttf", 13);
           textFont(myFont);
-          fill(0);  
+          fill(#FFFFFF);   
           textAlign(CENTER, TOP);                      
                     
      if(ang >= 0 && ang < 90){

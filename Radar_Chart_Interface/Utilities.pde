@@ -4,10 +4,8 @@ void setupBackground(){
   
   background(#012437);  //background color dark blue
  
-  // Header label
-  //PFont spiderFont = createFont("HOMOARAK.TTF", 30);
-  PFont spiderFont = createFont("TheAmazingSpider-Man.ttf", 35);
-  //PFont spiderFont = createFont("MontserratAlternates-Bold.ttf", 35);
+  //Header label
+  PFont spiderFont = createFont("Bebas-Regular.ttf", 50);
   textFont(spiderFont);
   fill(#FEA001);  
   textAlign(CENTER, CENTER);

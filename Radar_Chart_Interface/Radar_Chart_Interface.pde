@@ -5,8 +5,6 @@
 //  - parameters for colors
 //  - how to change default text font (around axis)
 
-
-
 /*----------------------------------------------------------------------------------------------
  RadarChart inspired from the layout available on : https://github.com/pavanred/Radar-chart-utility- (but practically entirely recorded)
  ----------------------------------------------------------------------------------------------------*/
@@ -91,9 +89,8 @@ void setup() {
   sidePanColor = lightpurple;
   textColor = lightblue;
   lineColor = darkyellow;
-  spiderFont = createFont("TheAmazingSpider-Man.ttf",17);
-  //spiderFont = createFont("MontserratAlternates-Bold.ttf", 18);
-
+  spiderFont = createFont("Bebas-Regular.ttf",19);
+  
 
   //initialise the OSC communication
   oscP5 = new OscP5(this, 12000);
