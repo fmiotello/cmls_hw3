@@ -76,7 +76,6 @@ int middleblue = color(157, 211, 215);
 void setup() {  
 
   size(900, 900);  //screen size set to 800*800
-
   
   // VISUAL VARIABLES
   webColor = middleblue;
@@ -245,11 +244,12 @@ void draw() {
     hooveredDim = rc.getAxisNum(mouseX, mouseY);
   }
   
+  
   // draw the spider to set the paning, at the abscisse corresponding to the actual paning
   image(spider, panX-percentX(5), percentY(85),percentX(10),percentY(10));
+  textFont(spiderFont);
+  fill(textColor);  
   if (!panSetting) {
-    textFont(spiderFont);
-    fill(textColor);  
     textAlign(CENTER, CENTER);
     text("PAN ME", panX, percentY(96));
   }
@@ -343,4 +343,19 @@ void setPanX(float _panX) {
 
 float normalizedPanX(float _panX) {   // normalise panX between -1 and +1
   return(((_panX-percentX(10))/percentX(40))-1);
+}
+
+// When receiving an osc message, it means superCollider just launched, so we need to relaunch the interface by relauching the setup() to re-send all the values of the parameters.
+/* incoming osc message are forwarded to the oscEvent method. */
+void oscEvent(OscMessage theOscMessage) {
+  /* print the address pattern and the typetag of the received OscMessage */
+  print("### received an osc message.");
+  print(" addrpattern: "+theOscMessage.addrPattern());
+  println(" typetag: "+theOscMessage.typetag());
+  
+  print("RELAUNCHING..........................................",percentX(50),percentY(50));
+  
+  delay(500);
+  
+  frameCount = -1;    // That way we relaunch the setup() !
 }

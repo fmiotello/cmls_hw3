@@ -5,13 +5,13 @@
 //TO DO:
 //change number of harmonics dynamically - send all harmonics in one OSC message
 //think about harmonics normalization and clipping (0.8 parameters is now removed, due to masterVolume)
-
+(
 s.waitForBoot({
 
 	//GUI vars
 	var win, subwin, multiSlider,singleNoteButton, singleNoteButton1;
 	//synth vars
-	var sound, numharm, partialFreq, partialAmpl, attack, release, keys, masterVolume, vibrato, pan;
+	var sound, numharm, partialFreq, partialAmpl, attack, release, keys, masterVolume, vibrato, pan,oscObject;
 
 	//****************** INITIALIZATION **************************
 
@@ -71,7 +71,8 @@ s.waitForBoot({
 
 	//****************** OSC **************************
 
-	NetAddr("127.0.0.1",57120);
+	oscObject = NetAddr("127.0.0.1",12000);
+	oscObject.sendMsg("/sendMeAllValues", "there");
 
 	OSCdef('OSCHarmonic',{
 		arg msg;
@@ -153,7 +154,7 @@ s.waitForBoot({
 	win = Window.new("Additive Synthesis", Rect(400, 30, 660, 400));
 	win.view.decorator = FlowLayout(win.view.bounds, 20@20, 10@10);
 	win.front;
-		win.onClose = {s.freeAll;};
+	win.onClose = {s.freeAll;};
 	CmdPeriod.doOnce({win.close});
 
 	// Multislider - changing values of partial amplitudes
@@ -191,3 +192,4 @@ s.waitForBoot({
 	};
 	s.meter;
 });
+)
