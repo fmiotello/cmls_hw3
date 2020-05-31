@@ -110,6 +110,15 @@ s.waitForBoot({
 		}  {postln("Error: Empty msg")};
 	},"/pan");
 
+	OSCdef('OSCNumharm',{
+		arg msg;
+		postln("num harm" + msg);
+
+		if(msg.size > 1) {
+			numharm = msg[1];
+		}  {postln("Error: Empty msg")};
+	},"/harmonicsNumber");
+
 
 	//****************** MIDI **************************
 
