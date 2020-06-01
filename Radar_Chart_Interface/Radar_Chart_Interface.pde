@@ -226,14 +226,14 @@ void draw() {
   stroke(lineColor);
   fill(darkblue);
   strokeWeight(2);
-  rect(percentX(0), percentY(84), percentX(110), percentY(14), 10);
+  rect(percentX(2), percentY(84), percentX(96), percentY(14), 10);
   
   strokeWeight(3);
   rect(percentX(10), percentY(13), percentX(80), percentY(18), 10);
   
   
-  setGradient(percentX(-30), percentY(85), percentX(70), percentY(12), sidePanColor, darkblue, 2);
-  setGradient(percentX(60), percentY(85), percentX(70), percentY(12), darkblue, sidePanColor, 2);
+  setGradient(20, percentY(85), 430, percentY(12), darkblue, sidePanColor, 2);
+  setGradient(450, percentY(85), 430, percentY(12), sidePanColor, darkblue, 2);
 
 
   // get the hoovered axis if hoovering the web
