@@ -20,26 +20,8 @@ class RadarChart{
   float[] axisPointsY;
   Axis[] axeList;
   
-  ////Constructor - sets margin width, margin height, number of intervals on the axes to default values
-  //RadarChart(float _X, float _Y, float _chartWidth, float _chartHeight,int dim){
-  //  
-  //  dimensions = dim; 
-  //  angleStep = 360 / dim;
-  //  marginWidth = 50;  //default values - edit defaults of use the construtor over load.
-  //  marginHeight = 50; //default values - edit defaults of use the construtor over load.
-  //  X = _X + marginWidth;
-  //  Y = _Y + marginHeight;
-  //  chartWidth = _chartWidth - (marginWidth * 2);
-  //  chartHeight = _chartHeight - (marginHeight * 2);
-  //  centerX = _X + (_chartWidth/2);
-  //  centerY = _Y + (_chartHeight/2);
-  //  axisLength = chartHeight/2 - marginHeight;
-  //  intervals = 5; //number of intervals on the axes
-  //  intervalLength = axisLength/float(intervals);
-  //  
-  //}
   
-  //Constructor - accepts all user input values
+  //Constructor
   RadarChart(float _chartBegX, float _chartBegY, float _chartWidth, float _chartHeight, float _marginWidth, float _marginHeight, 
             int _intervals, int dim, int lblWidth, int lblHeight, Axis[] _axeList){
  
@@ -61,11 +43,7 @@ class RadarChart{
     axeList = _axeList;
   }
   
-  //void setDimensions(int dim){  //to change the number of dimensions of the chart dynamically. Chart will have to be redrawn after this or drawChart() should be invoked in draw()
-  //  dimensions = dim;
-  //  angleStep = 360 / dimensions;
-  //}
-  
+  //to draw the chart :
   void drawChart(){
     
     stroke(0);
@@ -118,6 +96,7 @@ class RadarChart{
   }
   
   
+  //to draw the values in the chart :
   void addValuesInChart(PointValue[] pointValues){
     float angle = -90;
     strokeWeight(1);
@@ -131,17 +110,17 @@ class RadarChart{
     endShape(CLOSE);
   }
   
-  //get the x-axis co-ordinate of a point on the axis/dimension being drawn in the radar chart
+  //get the X coordinate from a point of the radar chart in circular dimensions
   private float getX(float ang, float len){
     return (centerX + (len * cos(radians(ang))));    
   }
   
-  //get the x-axis co-ordinate of a point on the axis/dimension being drawn in the radar chart
+  //get the Y coordinate from a point of the radar chart in circular dimensions
   private float getY(float ang, float len){
     return (centerY + (len * sin(radians(ang))));
   }  
  
-  //get the number of the hoovered axis
+  //get the number of the actual hoovered axis
   private int getAxisNum(float _mouseX, float _mouseY){
     float actualAngleDegree = (angleStep/2) + 90 + 180*atan2(_mouseY-centerY,_mouseX-centerX)/PI;
     if(actualAngleDegree<0){
@@ -174,7 +153,6 @@ class RadarChart{
  III quadrant - txt aligned left and bottom with padding to the y axis and x axis co-ordinate reduced by a label's width
  IV quadrant - text aligned left and bottom and x axis co-ordinate  reduced by a label's width 
  */ 
- 
  private void displayLabels(float ang, Axis axis){
     float xValue = getX(ang, axisLength + labelHeight/4);
     float yValue = getY(ang, axisLength + labelHeight/4);

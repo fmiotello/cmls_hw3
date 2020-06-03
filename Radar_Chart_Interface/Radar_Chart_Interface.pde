@@ -1,20 +1,21 @@
-// TODO : 
-//
-//  - branch in spider web
-//  - set number harmo ( set the lasts to 0 + trransmit it and the number of harmos)
-//  - parameters for colors
-//  - how to change default text font (around axis)
-
 /*----------------------------------------------------------------------------------------------
- RadarChart inspired from the layout available on : https://github.com/pavanred/Radar-chart-utility- (but practically entirely recorded)
+
+ * Authors: Federico Miotello, Francesco Castelli, Andrianna Takic, Clément Jameau
+ * Created:   24.05.2020
+ * 
+ * Free to be re-used
+ 
+ RadarChart inspired from the skeletton available on : https://github.com/pavanred/Radar-chart-utility-
  ----------------------------------------------------------------------------------------------------*/
 import controlP5.*;
 import oscP5.*;
 import netP5.*;
 
+//variable for OSC communication with the synthetizer
 OscP5 oscP5;
 NetAddress myRemoteLocation;
 
+//knobs and slider
 ControlP5 cp5;
 Knob amplitude_knob;
 Knob reverb_knob;
@@ -23,6 +24,7 @@ Textlabel harmonicNumberLabel;
 Knob attack_knob;
 Knob release_knob;
 
+//variables for the knobs/slider
 float master_volume;
 float spider_effect;
 int harmonics_number;
@@ -31,19 +33,24 @@ float release;
 
 RadarChart rc;
 
+//datas for the radar chart
 PointValue[] chartPoints;
 Axis[] axes;
 int maxDimNumber;
 int intervalNumber;
 
+//when manipulating the radar chart...
 int manipulatedDim;
 int hooveredDim;
 
+//images
 PImage spider;
 PImage spider_cursor;
+//Pan variables
 float panX;
 Boolean panSetting;
 
+//COLOR variables
 int backgroundColor;
 int webColor;
 int webPointColor;
@@ -62,7 +69,6 @@ int sidePanColor;
 
 
 //COLOR SPECTRUM TO USE
-
 int lightyellow = #F1B434;
 int darkyellow = #FEA001;
 int lightpurple = #C25B67;
@@ -119,7 +125,6 @@ void setup() {
   // create our knobs.
   cp5 = new ControlP5(this);
 
-
   harmonicsNumber_slider = cp5.addSlider("harmonics_number");  // needs to be defined before other knobs because of the if statement in the ControlEvent method.
     harmonicsNumber_slider
     .setPosition(percentX(15), percentY(50))
@@ -134,9 +139,7 @@ void setup() {
   harmonicNumberLabel = cp5.addLabel("HARMONIC NUMBER")
     .setPosition(percentX(10), percentY(70))
     .setColor(textColor)
-    .setFont(spiderFont);
-
-   
+    .setFont(spiderFont); 
    
   amplitude_knob = cp5.addKnob("master_volume")
     .setPosition(percentX(15), percentY(15))
@@ -162,7 +165,6 @@ void setup() {
 
   cp5.getController("spider_effect").getCaptionLabel().setColor(textColor).setFont(spiderFont);
 
-
   attack_knob = cp5.addKnob("attack")
     .setPosition(percentX(55), percentY(15))
     .setRadius(50)
@@ -174,7 +176,6 @@ void setup() {
     
   cp5.getController("attack").getCaptionLabel().setColor(textColor).setFont(spiderFont);
  
-
   release_knob = cp5.addKnob("release")
     .setPosition(percentX(75), percentY(15))
     .setRadius(50)

@@ -12,7 +12,7 @@ void setupBackground(){
   text("SYNTHESPIDER",percentX(50), percentY(6));   
 }
 
-//methods to use percentage instead of absolute values
+//methods to use percentage instead of absolute values for coordinates X and Y
 //X - axis
 int percentX(int value){
   return (value * width)/100;
@@ -22,11 +22,9 @@ int percentY(int value){
   return (value * height)/100;
 }
 
-/*-----------------------------------------------
--------------------------------------------------*/
+/*------------------------------------------------------------------------------------------*/
 
-// I have to make it one class
-
+// Axis class
 class Axis{
 
   int id;
@@ -38,7 +36,7 @@ class Axis{
   }
 }
 
-
+// Value class (an instance of this object is one point on the radar chart
 class PointValue{
 
   float value;  //between 0 and 1
