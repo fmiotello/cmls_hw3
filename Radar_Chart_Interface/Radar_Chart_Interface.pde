@@ -1,6 +1,6 @@
 /*----------------------------------------------------------------------------------------------
 
- * Authors: Federico Miotello, Francesco Castelli, Andrianna Takic, Clément Jameau
+ * Authors: Federico Miotello, Francesco Castelli, Andriana Takic, Clément Jameau
  * Created:   24.05.2020
  * 
  * Free to be re-used
